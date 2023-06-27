@@ -84,3 +84,13 @@
    2. https://www.youtube.com/watch?v=GNrdg3PzpJQ
 2. React Router
    1. https://reactrouter.com/en/main
+  
+### Учетные данные пользователей
+#### Суперюзер
+Имя пользователя: admin
+
+Пароль: 123456
+#### Другие пользователи
+Пароль: robot1234
+
+
