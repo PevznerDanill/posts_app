@@ -41,6 +41,7 @@ import axios from 'axios';
 import PostForm from "@/components/PostForm.vue";
 import PostDialog from "@/components/UI/PostDialog.vue";
 import PostButton from "@/components/UI/PostButton.vue";
+import { mapState } from "vuex";
 
 
 export default {
@@ -55,7 +56,6 @@ export default {
   data() {
     return {
       posts: [],
-      is_superuser: false,
       dialogVisible: false,
       isPostsLoading: false,
       next: null,
@@ -70,6 +70,7 @@ export default {
       try {
         const response = await axios.post('http://127.0.0.1:8000/api/posts/', post);
         if (response.status === 201) {
+          post.id = response.data.id;
           this.posts.unshift(post);
           this.dialogVisible = false;
         }
@@ -104,20 +105,15 @@ export default {
         alert('Error')
       }
     },
-    async fetchCurrentUser() {
-      try {
-        const response = await axios.post('http://127.0.0.1:8000/api/posts/');
-      } catch (e) {
-        if (e.response.status === 400) {
-          this.is_superuser = true
-        }
-      }
-    }
-  },
 
+  },
   mounted() {
     this.fetchPosts();
-    this.fetchCurrentUser()
+  },
+  computed: {
+    ...mapState({
+      is_superuser: state => state.isSuperUser,
+    })
   }
 }
 </script>

@@ -50,6 +50,7 @@ export default {
         title: "",
         content: "",
         description: "",
+        id: null,
       }
     },
     createNewParagraph(event) {
@@ -59,8 +60,7 @@ export default {
         const selectionStart = textArea.selectionStart;
         const selectionEnd = textArea.selectionEnd;
 
-        const newText = currentText.slice(0, selectionStart) + '\n' + currentText.slice(selectionEnd);
-        textArea.value = newText;
+        textArea.value = currentText.slice(0, selectionStart) + '\n' + currentText.slice(selectionEnd);
         textArea.selectionStart = textArea.selectionEnd = selectionStart + 1;
         event.preventDefault();
       }

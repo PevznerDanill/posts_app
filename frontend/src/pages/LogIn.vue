@@ -47,8 +47,7 @@ export default {
         if (response.status === 200) {
           const token = response.data.auth_token
           this.$store.commit('setToken', token)
-          axios.defaults.headers.common['Authorization'] = 'Token ' + token
-          localStorage.setItem("token", token)
+          console.log(this.$store.state.userName)
           this.$router.push('/')
         }
       } catch (e) {

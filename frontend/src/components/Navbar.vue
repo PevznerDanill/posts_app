@@ -14,7 +14,7 @@
             <router-link class="nav-link" to="/log-in">Login</router-link>
           </li>
            <li v-if="isAuthenticated" class="nav-item active">
-            <a style="cursor: pointer" @click="logOut" class="nav-link">Log out</a>
+            <a style="cursor: pointer" @click="logOut" class="nav-link">Log out as {{ userName }}</a>
           </li>
 
         </ul>
@@ -27,33 +27,32 @@
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import axios from "axios"
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+import axios from "axios";
+import { mapState } from "vuex";
+
 export default {
   name: "navbar",
    methods: {
-
-  async logOut () {
-   try {
+    async logOut () {
+      try {
         const response = await axios.post('/auth/token/logout/');
         console.log(response)
         if (response.status === 204) {
           this.$store.commit('removeToken')
-          axios.defaults.headers.common['Authorization'] = ''
-          localStorage.clear()
           this.$router.push('log-in')
         }
       } catch (e) {
         console.log(e)
         alert('Error')
-      }}
+      }},
   },
   computed: {
-    isAuthenticated() {
-      console.log(this.$store.state.isAuthenticated)
-      return this.$store.state.isAuthenticated;
-    },
+    ...mapState({
+      isAuthenticated: state => state.isAuthenticated,
+      userName: state => state.userName
+    }),
   },
 }
 </script>
