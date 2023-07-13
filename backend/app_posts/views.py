@@ -6,6 +6,7 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import PostFilter
 from rest_framework import mixins, viewsets
+from .paginator import CustomPagination
 
 
 class PostsListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -18,6 +19,7 @@ class PostsListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Re
     filter_backends = [filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = PostFilter
     ordering_fields = ['created_at', 'title']
+    pagination_class = CustomPagination
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

@@ -13,6 +13,8 @@
           </post-dialog>
         </div>
     </div>
+
+
    <post-list
       :posts="posts"
       v-if="!isPostsLoading"
@@ -20,17 +22,17 @@
     <div v-else class="lds-ellipsis">
       <div></div><div></div><div></div><div></div>
     </div>
-    <div class="container btn__container">
-      <button v-if="next" @click="fetchPostsPage(next)" class="btn btn-primary">
-      Next
-    </button>
-    <button v-if="back" @click="fetchPostsPage(back)" class="btn btn-primary">
-      Back
-    </button>
-    </div>
+   <paginator
+     :back="back"
+     :next="next"
+     :page="page"
+     :total-pages="totalPages"
+     @changePage="changePage"
+     @movePage="movePage"
+   >
+   </paginator>
 
-
-    </main>
+ </main>
 </template>
 
 <script>
@@ -42,6 +44,7 @@ import PostForm from "@/components/PostForm.vue";
 import PostDialog from "@/components/UI/PostDialog.vue";
 import PostButton from "@/components/UI/PostButton.vue";
 import { mapState } from "vuex";
+import Paginator from "@/components/Paginator.vue";
 
 
 export default {
@@ -50,6 +53,7 @@ export default {
     PostDialog,
     PostList,
     PostForm,
+    Paginator,
   },
   name: "Main",
 
@@ -58,8 +62,10 @@ export default {
       posts: [],
       dialogVisible: false,
       isPostsLoading: false,
-      next: null,
-      back: null,
+      totalPages: 0,
+      page: 1,
+      next: '',
+      back: '',
     }
   },
   methods: {
@@ -79,32 +85,40 @@ export default {
         console.log(e.response)
         alert('Error')
       }
+    },
+    handlePostPage (response) {
+      this.next = response.data.next;
+      this.back = response.data.previous;
+      this.posts = response.data.results;
+      this.totalPages = response.data.total_pages;
+      this.page = response.data.current_page;
 
     },
-
+    changePage (pageNumber) {
+      this.page = pageNumber;
+    },
     async fetchPosts() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/posts/');
-        console.log(response)
-        this.next = response.data.next
-        this.back = response.data.previous
-        this.posts = response.data.results;
-      } catch (e) {
-        alert('Error')
-      }
-    },
-    async fetchPostsPage(url) {
-      try {
-        const response = await axios.get(url);
-        console.log(response)
-        this.next = response.data.next
-        this.back = response.data.previous
-        this.posts = response.data.results
+        const response = await axios.get('/api/posts/', {
+          params: {
+            page: this.page,
+          }
+        });
+        this.handlePostPage(response);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (e) {
         alert('Error')
       }
     },
+    async movePage(url) {
+      try {
+        const response = await axios.get(url);
+        this.handlePostPage(response);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (e) {
+        alert('Error')
+      }
+    }
 
   },
   mounted() {
@@ -114,29 +128,20 @@ export default {
     ...mapState({
       is_superuser: state => state.isSuperUser,
     })
+  },
+  watch: {
+    page() {
+      this.fetchPosts()
+    }
   }
 }
 </script>
 
 <style scoped>
-.page__wrapper {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
+
+.jumbotron {
+  background-color: rgba(0, 0, 0, 0);;
 }
 
-.page {
-  cursor: pointer;
-}
-
-.current-page {
-  color: blue;
-  font-weight: bold;
-}
-
-.btn__container {
-  display: flex;
-  gap: 30px;
-}
 
 </style>
